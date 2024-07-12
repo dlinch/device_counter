@@ -15,6 +15,8 @@ RSpec.describe DeviceReading do
   end
 
   describe ".latest" do
+    pending "Unviable until SQL is available"
+
     subject { described_class }
     let(:latest_reading) { create(:device_reading) }
     let!(:readings) { create_list(:device_reading, 7, :random_time, device_id: device_id) }
@@ -26,6 +28,8 @@ RSpec.describe DeviceReading do
   end
 
   describe ".total_count_for" do
+    pending "Unviable until SQL is available"
+
     subject { described_class }
     let(:device_id) { SecureRandom.uuid }
     let!(:readings) { create_list(:device_reading, 5, :random_time, device_id: device_id, count: 5) }
