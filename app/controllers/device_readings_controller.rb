@@ -1,11 +1,12 @@
 class DeviceReadingsController < ApplicationController
   def create
-    creator = DeviceReadingCreator.new(store)
-    case creator.call(device_storage_params)
-    in [:error, :duplicate]
-      render json: {}, status: 422
-    in [:error, String => errors]
-      render json: {errors: errors}
+    result = DeviceReadingBulkOrchestrator.new(store).call(device_storage_params)
+
+    case result
+    in [:failure]
+      render json: {errors: result.error_results}, status: 422
+    in [:partial_success]
+      render json: {errors: result.error_results}, status: 200
     else
       head :ok
     end
@@ -18,11 +19,11 @@ class DeviceReadingsController < ApplicationController
   private
 
   def device_storage_params
-    params.permit(:device_id, :timestamp_at, :count)
+    params.permit(:id, readings: [:timestamp_at, :count])
   end
 
   def read_keys(id)
-    device_reading = DeviceReading.new(id)
+    device_reading = DeviceReading.new(device_id: id)
 
     [device_reading.count_key, device_reading.latest_timestamp_key]
   end

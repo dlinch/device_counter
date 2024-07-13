@@ -1,7 +1,10 @@
 class DeviceReadingCreator < ApplicationCreator
-  delegate :count_key, :latest_timestamp_key, :unique_timestamp_key, :valid?, to: :record
+  delegate :count_key, :latest_timestamp_key, :unique_timestamp_key, to: :record
 
   def call(params)
+    puts "!"*100
+    puts "creator #{params}"
+    puts "!"*100
     @record = DeviceReading.new(params)
 
     return [:error, formatted_errors] if invalid?
@@ -10,6 +13,8 @@ class DeviceReadingCreator < ApplicationCreator
     write_timestamp
     update_count
     conditionally_change_latest_timestamp
+
+    [:success, record]
   end
 
   private
@@ -27,6 +32,7 @@ class DeviceReadingCreator < ApplicationCreator
   end
 
   def update_count
+    # Increment sets the key if it does not exist
     increment(count_key, record.count)
   end
 
