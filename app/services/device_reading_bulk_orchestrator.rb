@@ -8,9 +8,6 @@ class DeviceReadingBulkOrchestrator
   def call(raw_device_storage_params)
     normalized_params = normalize_params(raw_device_storage_params)
     @results = normalized_params.map do |params|
-      puts "%"*100
-      puts "orchestrator: #{params}"
-      puts "%"*100
       creator = DeviceReadingCreator.new(@store)
       creator.call(params)
     end
@@ -37,10 +34,7 @@ class DeviceReadingBulkOrchestrator
   end
 
   def normalize_params(params)
-    params.to_h.deep_symbolize_keys
-    puts "^"*100
-    puts "pre-normalized params: #{params}"
-    puts "^"*100
+    params.try(:deep_symbolize_keys!)
     id = params[:id]
     params[:readings].map do |reading|
       reading

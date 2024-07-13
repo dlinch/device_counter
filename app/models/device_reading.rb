@@ -14,7 +14,7 @@ class DeviceReading < ApplicationRecord
   end
 
   def unique_timestamp_key
-    "#{device_id}_#{timestamp_at}"
+    "#{device_id}_#{timestamp_at.iso8601}"
   end
 
   # Future query options if/when we can move data into disk

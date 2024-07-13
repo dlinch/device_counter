@@ -2,13 +2,10 @@ class DeviceReadingCreator < ApplicationCreator
   delegate :count_key, :latest_timestamp_key, :unique_timestamp_key, to: :record
 
   def call(params)
-    puts "!"*100
-    puts "creator #{params}"
-    puts "!"*100
     @record = DeviceReading.new(params)
 
     return [:error, formatted_errors] if invalid?
-    return [:error, :duplicate] if is_duplicate?
+    return [:error, :duplicate, params[:device_id]] if is_duplicate?
 
     write_timestamp
     update_count

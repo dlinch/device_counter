@@ -56,7 +56,7 @@ RSpec.describe DeviceReadingCreator do
 
         expect(result1.first).to eq(:success)
         expect(result1.last).to be_kind_of(DeviceReading)
-        expect(result2).to eq([:error, :duplicate])
+        expect(result2).to eq([:error, :duplicate, params[:device_id]])
       end
 
       context "bad params" do
