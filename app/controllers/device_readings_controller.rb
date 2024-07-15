@@ -1,4 +1,6 @@
 class DeviceReadingsController < ApplicationController
+  before_action :return_if_prod, only: :index
+
   def create
     orchestrator = DeviceReadingBulkOrchestrator.new(store)
 
@@ -15,6 +17,10 @@ class DeviceReadingsController < ApplicationController
 
   def show
     render json: read_results
+  end
+
+  def index
+    render json: store.instance_variable_get(:@data)
   end
 
   private
@@ -35,4 +41,5 @@ class DeviceReadingsController < ApplicationController
 
     {cumulative_count: results[keys.first], latest_timestamp: results[keys.last]}
   end
+
 end

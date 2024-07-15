@@ -19,7 +19,7 @@ class DeviceReadingCreator < ApplicationCreator
   def conditionally_change_latest_timestamp
     latest_timestamp = fetch(latest_timestamp_key) { record.timestamp_at }
 
-    if record.timestamp_at > latest_timestamp.to_time
+    if record.timestamp_at.to_time.iso8601 > latest_timestamp.to_time.to_time.iso8601
       write(latest_timestamp_key, record.timestamp_at)
     end
   end
@@ -30,7 +30,7 @@ class DeviceReadingCreator < ApplicationCreator
 
   def update_count
     # Increment sets the key if it does not exist
-    increment(count_key, record.count)
+    increment(count_key, record.count.to_i)
   end
 
   def write_timestamp

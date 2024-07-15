@@ -23,4 +23,9 @@ bundle exec rspec spec/
 
 * Deployment instructions
 
-* ...
+Follow On Work:
+
+Reading class to handle param massaging
+Backtrack attribute renaming of ID -> Service ID and Timestamp -> Timestamp At
+Validation that ID is a UUID
+Remove more of the SQLite DB Testing

@@ -13,36 +13,36 @@ RSpec.describe DeviceReadingCreator do
       expect(store).to_not have_cache_key(device.latest_timestamp_key)
       expect(store).to_not have_cache_key(device.unique_timestamp_key)
 
-      subject
+      expect(subject).to have_successful_outcome
 
       expect(store).to \
         have_cache_key(device.count_key).with_value(3)
       expect(store).to \
-        have_cache_key(device.latest_timestamp_key).with_value(params[:timestamp_at])
+        have_cache_key(device.latest_timestamp_key).with_timestamp_value(params[:timestamp_at])
       expect(store).to \
         have_cache_key(device.unique_timestamp_key)
     end
 
     it "updates the latest timestamp if the new timestamp is later" do
-      subject
-      expect(store).to have_cache_key(device.latest_timestamp_key).with_value(params[:timestamp_at])
+      expect(subject).to have_successful_outcome
+      expect(store).to have_cache_key(device.latest_timestamp_key).with_timestamp_value(params[:timestamp_at])
 
       new_timestamp = 30.seconds.ago.iso8601
       described_class.new(store).call(params.merge(timestamp_at: new_timestamp)) 
-      expect(store).to have_cache_key(device.latest_timestamp_key).with_value(new_timestamp)
+      expect(store).to have_cache_key(device.latest_timestamp_key).with_timestamp_value(new_timestamp)
     end
 
     it "does not update timestamp if the timestamp is earlier" do
-      subject
-      expect(store).to have_cache_key(device.latest_timestamp_key).with_value(params[:timestamp_at])
+      expect(subject).to have_successful_outcome
+      expect(store).to have_cache_key(device.latest_timestamp_key).with_timestamp_value(params[:timestamp_at])
 
       new_timestamp = 3.hours.ago.iso8601
       described_class.new(store).call(params.merge(timestamp_at: new_timestamp)) 
-      expect(store).to have_cache_key(device.latest_timestamp_key).with_value(params[:timestamp_at])
+      expect(store).to have_cache_key(device.latest_timestamp_key).with_timestamp_value(params[:timestamp_at])
     end
 
     it "increments count for a device_id" do
-      subject
+      expect(subject).to have_successful_outcome
       expect(store).to have_cache_key(device.count_key).with_value(3)
 
       new_timestamp = 30.seconds.ago.iso8601
@@ -63,14 +63,15 @@ RSpec.describe DeviceReadingCreator do
         let(:params) { {device_id: SecureRandom.uuid, timestamp_at: 10.minutes.ago.iso8601, count: 0} }
 
         it "returns an error in the result array for bad validation" do
-          expect(subject).to eq([:error, "Count must be greater than 0"])
+          expect(subject).not_to have_successful_outcome.with_message("Count must be greater than 0")
         end
       end
 
       context "missing params" do
         let(:params) { {device_id: SecureRandom.uuid, count: 1} }
+
         it "returns an error if a parameter is missing" do
-          expect(subject).to eq([:error, "Timestamp at can't be blank"])
+          expect(subject).not_to have_successful_outcome.with_message("Timestamp at can't be blank")
         end
       end
     end
